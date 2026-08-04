@@ -1,6 +1,6 @@
 """
 Microbenchmark BATCH_SIZE independent secret field multiplications
-(default: 16384). This source is protocol-independent. Collect runtime and
+(default: 524288). This source is protocol-independent. Collect runtime and
 global communication from the MP-SPDZ execution output.
 """
 
@@ -8,7 +8,7 @@ from Compiler.types import regint, sint
 from Compiler.library import print_ln
 
 
-BATCH_SIZE = 16384
+BATCH_SIZE = 524288
 
 
 print_ln('multiplication: BATCH_SIZE=%s', BATCH_SIZE)

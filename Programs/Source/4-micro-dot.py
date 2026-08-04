@@ -1,6 +1,6 @@
 """
 Microbenchmark NUM_DOT_PRODUCTS independent secret dot products of length
-DOT_PRODUCT_LENGTH (defaults: 256 by 64). This source is protocol-independent.
+DOT_PRODUCT_LENGTH (defaults: 16384 by 64). This source is protocol-independent.
 Collect runtime and global communication from the MP-SPDZ execution output.
 """
 
@@ -8,7 +8,7 @@ from Compiler.types import regint, sint
 from Compiler.library import print_ln
 
 
-NUM_DOT_PRODUCTS = 256
+NUM_DOT_PRODUCTS = 16384
 DOT_PRODUCT_LENGTH = 64
 
 
@@ -16,7 +16,7 @@ print_ln('dot product: NUM_DOT_PRODUCTS=%s, DOT_PRODUCT_LENGTH=%s',
          NUM_DOT_PRODUCTS, DOT_PRODUCT_LENGTH)
 
 # Every logical row is an independent dot product. Two secret seeds are
-# expanded with small public offsets; sint.matrix_mul() lowers the 256-by-64
+# expanded with small public offsets; sint.matrix_mul() lowers the 16384-by-64
 # matrix-vector workload to one optimized secret matmuls instruction.
 seeds = sint.input_tensor_via(0, [2, 3], binary=False)
 seed_x = seeds[0]
