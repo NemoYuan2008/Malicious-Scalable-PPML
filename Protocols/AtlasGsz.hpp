@@ -25,6 +25,8 @@ AtlasGsz<T>::AtlasGsz(Player& P) : honest(P), P(P)
 template<class T>
 AtlasGsz<T>::~AtlasGsz()
 {
+    if (truncation_check_failed)
+        return;
     check();
     check_opened_values();
 }
@@ -32,6 +34,8 @@ AtlasGsz<T>::~AtlasGsz()
 template <class T>
 inline void AtlasGsz<T>::maybe_check()
 {
+    if (truncation_check_failed)
+        throw mac_fail("AtlasGsz: truncation consistency previously failed");
     if (x_verify.size() >= AtlasConfig::max_before_check) {
         check();
         x_verify.reserve(AtlasConfig::max_before_check);
@@ -224,6 +228,7 @@ template<class T>
 void AtlasGsz<T>::init_mul_trunc(int length)
 {
     maybe_check();
+    truncation_openings_checked = false;
     honest.init_mul_trunc(length);
 }
 
@@ -238,12 +243,26 @@ void AtlasGsz<T>::prepare_mul_trunc(const T& x, const T& y)
 template<class T>
 void AtlasGsz<T>::exchange_mul_trunc()
 {
-    honest.exchange_mul_trunc();
+    if (truncation_check_failed)
+        throw mac_fail("AtlasGsz: truncation consistency previously failed");
+    try
+    {
+        honest.exchange_mul_trunc();
+        honest.check_truncation_openings();
+        truncation_openings_checked = true;
+    }
+    catch (...)
+    {
+        truncation_check_failed = true;
+        throw;
+    }
 }
 
 template<class T>
 T AtlasGsz<T>::finalize_mul_trunc()
 {
+    if (truncation_check_failed or not truncation_openings_checked)
+        throw mac_fail("AtlasGsz: truncation openings have not passed consistency");
     T pre_trunc;
     T res = honest.finalize_mul_trunc(&pre_trunc);
     z_verify.push_back(pre_trunc);
@@ -255,6 +274,7 @@ template<class T>
 void AtlasGsz<T>::init_dotprod_trunc()
 {
     maybe_check();
+    truncation_openings_checked = false;
     honest.init_dotprod_trunc();
 }
 
@@ -275,12 +295,26 @@ void AtlasGsz<T>::next_dotprod_trunc()
 template<class T>
 void AtlasGsz<T>::exchange_dotprod_trunc()
 {
-    honest.exchange_dotprod_trunc();
+    if (truncation_check_failed)
+        throw mac_fail("AtlasGsz: truncation consistency previously failed");
+    try
+    {
+        honest.exchange_dotprod_trunc();
+        honest.check_truncation_openings();
+        truncation_openings_checked = true;
+    }
+    catch (...)
+    {
+        truncation_check_failed = true;
+        throw;
+    }
 }
 
 template<class T>
 T AtlasGsz<T>::finalize_dotprod_trunc(int length)
 {
+    if (truncation_check_failed or not truncation_openings_checked)
+        throw mac_fail("AtlasGsz: truncation openings have not passed consistency");
     dotprod_info[z_verify.size()] = length;
     T pre_trunc;
     T res = honest.finalize_dotprod_trunc(length, &pre_trunc);
@@ -309,6 +343,8 @@ void AtlasGsz<T>::prepare_with_solved_bits(const typename T::open_type& product)
 template<class T>
 void AtlasGsz<T>::check()
 {
+    if (truncation_check_failed)
+        throw mac_fail("AtlasGsz: truncation consistency previously failed");
     if (x_verify.empty()) {
         return;
     }

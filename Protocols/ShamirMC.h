@@ -6,6 +6,7 @@
 #ifndef PROTOCOLS_SHAMIRMC_H_
 #define PROTOCOLS_SHAMIRMC_H_
 
+#include <cstdint>
 #include <numeric>
 
 #include "MAC_Check_Base.h"
@@ -42,6 +43,9 @@ public:
     ~IndirectShamirMC_2t() {}
 
     virtual void exchange(const Player& P);
+
+    // Check the current opening batch without consuming its values.
+    void check_opening_consistency(const Player& P, uint64_t batch) const;
 
     // The following two functions are needed in AtlasBgin::prove_deg2_rel_*()
     void prepare_open_at_point(const T& secret, int point, const Player &P);

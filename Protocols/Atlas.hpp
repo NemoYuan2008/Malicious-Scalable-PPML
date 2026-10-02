@@ -351,6 +351,12 @@ void Atlas<T>::exchange_mul_trunc()
     local_mc_2t.exchange(P);
 }
 
+template<class T>
+void Atlas<T>::check_truncation_openings()
+{
+    local_mc_2t.check_opening_consistency(P, truncation_check_batch++);
+}
+
 /**
  * @brief Finalize the multiplication with truncation
  * 

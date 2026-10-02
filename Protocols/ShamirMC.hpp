@@ -12,6 +12,7 @@
 #include "Shamir.hpp"
 
 #include "AtlasConfig.h"
+#include "TruncationConsistency.h"
 
 template<class T>
 ShamirMC<T>::ShamirMC(int t) :
@@ -252,6 +253,14 @@ void IndirectShamirMC_2t<T>::exchange(const Player& P)
         this->values.push_back(this->os.template get<T>());
 }
 
+
+template<class T>
+void IndirectShamirMC_2t<T>::check_opening_consistency(
+        const Player& P, uint64_t batch) const
+{
+    TruncationConsistency::check<typename T::open_type>(
+            this->values, this->secrets.size(), batch, P);
+}
 
 /**
  * Prepare opening of a secret at a specific point
