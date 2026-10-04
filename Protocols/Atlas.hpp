@@ -160,7 +160,6 @@ inline void Atlas<T>::init_mul_pub()
 template <class T>
 inline void Atlas<T>::prepare_mul_pub(T x, T y)
 {
-    // TODO: a zero-sharing is needed here for security
     local_mc_2t.prepare_open(x * y);
 }
 
@@ -305,7 +304,6 @@ void Atlas<T>::prepare_with_solved_bits(const typename T::open_type& product)
         r_prime += r_msb << i;
     }
 
-    // TODO: a zero-sharing is needed here for security
     auto c = product + r;
     local_mc_2t.prepare_open(c);
 
@@ -349,6 +347,12 @@ template<class T>
 void Atlas<T>::exchange_mul_trunc()
 {
     local_mc_2t.exchange(P);
+}
+
+template<class T>
+void Atlas<T>::check_truncation_openings()
+{
+    local_mc_2t.check_opening_consistency(P, truncation_check_batch++);
 }
 
 /**

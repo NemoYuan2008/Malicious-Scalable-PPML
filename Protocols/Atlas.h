@@ -6,6 +6,8 @@
 #ifndef PROTOCOLS_ATLAS_H_
 #define PROTOCOLS_ATLAS_H_
 
+#include <cstdint>
+
 #include "Replicated.h"
 
 #include "Tools/Bundle.h"
@@ -35,6 +37,8 @@ private:
     typename T::open_type dotprod_share;
 
     Preprocessing<T>* prep = nullptr;
+
+    uint64_t truncation_check_batch = 0;
 
     array<T, 2> get_double_sharing();
 
@@ -95,6 +99,7 @@ public:
     void init_mul_trunc(int length);
     void prepare_mul_trunc(const T& x, const T& y);
     void exchange_mul_trunc();
+    void check_truncation_openings();
     T finalize_mul_trunc(T* pre_trunc = nullptr);
 
     // Functions for dot-product-then-truncate

@@ -21,6 +21,9 @@ private:
     Atlas<T> honest;
     Preprocessing<T>* prep = nullptr;
 
+    bool truncation_check_failed = false;
+    bool truncation_openings_checked = false;
+
     CheckedIndirectShamirMC_2t<T> local_mc_2t;
     MaliciousShamirMC<T> malicious_mc;
 
